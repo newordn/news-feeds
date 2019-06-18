@@ -1,26 +1,98 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, {Component} from 'react';
+import {TweetBody} from "./components/TweetBody.js";
+import {PullToRefresh, PullDownContent, ReleaseContent, RefreshContent} from "react-js-pull-to-refresh";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+
+
+class App extends Component {
+constructor(props)
+{
+  super(props);
+  this.state={
+    users:[]
+  };
+  this.handleRefresh = this.handleRefresh.bind(this);
+  this.getUser = this.getUser.bind(this);
+}
+componentWillMount()
+{
+  this.getUser();
+}
+handleRefresh()
+{
+  return new Promise(
+    (resolve)=> {
+      this.getUser();
+    }
   );
 }
 
+getUser(){
+  fetch('https://randomuser.me/api/')
+  .then(
+    response=>{
+
+      if(response.ok) return response.json();
+      throw new Error('Request failed.');
+    }
+  ).then(
+    data=>{
+      console.log(data);
+      this.setState({
+        users : [
+          {
+          name: data.results[0].name,
+          image: data.results[0].picture.medium,
+          tweet: data.results[0].email
+          },
+          ...this.state.users
+
+        ]
+      })
+    }
+  ).catch(
+    error=>{
+      console.log(error);
+    }
+  )
+}
+render()
+{
+  return (
+    
+    <PullToRefresh
+    pullDownContent={<PullDownContent />}
+    releaseContent={<ReleaseContent />}
+    refreshContent={<RefreshContent />}
+    pullDownThreshold={2}
+    onRefresh={this.handleRefresh}
+    triggerHeight={50}
+    backgroundColor='gray'>
+    <div className="main-body">
+    {this.state.users.map((user,index)=>{
+      let name = `${user.name.first} ${user.name.last}`;
+      let handle = `@${user.name.first}${user.name.last}`;
+      let image = user.image;
+      let tweet = user.tweet;
+      console.log(image);
+      return (
+        <TweetBody
+        key={index}
+        name={name}
+        handle={handle}
+        tweet={tweet}
+        image = {image}
+        />
+
+      )
+    })
+
+    }
+  </div>
+  </PullToRefresh>
+
+  );
+}
+
+}
 export default App;

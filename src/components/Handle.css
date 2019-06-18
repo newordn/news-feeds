@@ -1,0 +1,14 @@
+.handle {
+    margin-left: 10px;
+    margin-top: 19px;
+    min-width: 128px;
+    height: 16px;
+    font-family: HelveticaNeue;
+    font-size: 14px;
+    font-weight: normal;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: normal;
+    letter-spacing: -0.6px;
+    color: #75797d;
+  }
